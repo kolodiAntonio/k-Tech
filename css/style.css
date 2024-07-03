@@ -5354,6 +5354,9 @@ input:focus, select:focus, textarea:focus, .form-control:focus {
 .mb-70px {
   margin-bottom: 70px !important;
 }
+.mb-200px {
+  margin-bottom: 200px !important;
+}
 .mb-1 {
   margin-bottom: 1% !important;
 }
