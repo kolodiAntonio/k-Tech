@@ -352,6 +352,10 @@
                     pristanka.
                   </p>
                 </div>
+                <div
+                  class="g-recaptcha margin-35px-bottom"
+                  data-sitekey="6LcAGa0qAAAAAI3DatiZK-x6x4Mul9Uc29vEiFKz"
+                ></div>
                 <div class="col-md-5 text-start text-md-end">
                   <input type="hidden" name="redirect" value="" />
                   <button
@@ -510,6 +514,11 @@
     </div>
     <!-- end scroll progress -->
     <!-- javascript libraries -->
+    <script
+      src="https://www.google.com/recaptcha/api.js"
+      async=""
+      defer=""
+    ></script>
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/vendors.min.js"></script>
     <script
@@ -518,5 +527,77 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEo-vorWvCe6uj1Ddt8wEfSRZ6RK1vLZA&callback=initMap"
     ></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script
+      src="https://www.google.com/recaptcha/api.js"
+      async=""
+      defer=""
+    ></script>
+    <div
+      style="
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgb(204, 204, 204);
+        box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px;
+        position: absolute;
+        transition: visibility linear 0.3s, opacity 0.3s linear;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 2000000000;
+        left: 0px;
+        top: -10000px;
+      "
+      bis_skin_checked="1"
+    >
+      <div
+        style="
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          top: 0px;
+          left: 0px;
+          z-index: 2000000000;
+          background-color: rgb(255, 255, 255);
+          opacity: 0.05;
+        "
+        bis_skin_checked="1"
+      ></div>
+      <div
+        class="g-recaptcha-bubble-arrow"
+        style="
+          border: 11px solid transparent;
+          width: 0px;
+          height: 0px;
+          position: absolute;
+          pointer-events: none;
+          margin-top: -11px;
+          z-index: 2000000000;
+        "
+        bis_skin_checked="1"
+      ></div>
+      <div
+        class="g-recaptcha-bubble-arrow"
+        style="
+          border: 10px solid transparent;
+          width: 0px;
+          height: 0px;
+          position: absolute;
+          pointer-events: none;
+          margin-top: -10px;
+          z-index: 2000000000;
+        "
+        bis_skin_checked="1"
+      ></div>
+      <div style="z-index: 2000000000; position: relative" bis_skin_checked="1">
+        <iframe
+          title="reCAPTCHA izazov istječe za dvije minute"
+          name="c-8jzns9uujumz"
+          frameborder="0"
+          scrolling="no"
+          sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
+          src="https://www.google.com/recaptcha/api2/bframe?hl=hr&amp;v=zIriijn3uj5Vpknvt_LnfNbF&amp;k=6Lc_zD0pAAAAAO_fsba0xGWEYx46Iu9fqDegbEzY"
+          style="width: 100%; height: 100%"
+          bis_size='{"x":1,"y":-9999,"w":300,"h":150,"abs_x":1,"abs_y":-9999}'
+        ></iframe>
+      </div>
+    </div>
   </body>
 </html>
