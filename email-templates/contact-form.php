@@ -113,10 +113,10 @@ if( ! empty( $_POST['email'] ) ) {
 				}
 
 			   	//Success Message
-			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Your message has been sent successfully!" }';
+			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Vaša poruka je uspješno poslana!" }';
 			} else {
 				//Fail Message
-			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Your message could not been sent!" }';
+			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Vaša poruka ne može biti poslana!" }';
 			}
 			
 		} else { // SMTP
@@ -161,14 +161,14 @@ if( ! empty( $_POST['email'] ) ) {
 				}
 
 			   	//Success Message
-			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Your message has been sent successfully!" }';
+			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Vaša poruka je uspješno poslana!" }';
 			} else {
 				//Fail Message
-			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Your message could not been sent!" }';
+			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Vaša poruka ne može biti poslana!" }';
 			}
 		}
 	}
 } else {
 	//Empty Email Message
-	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Please add an email address!" }';
+	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Molimo Vas da unesete e-mail adresu!" }';
 }
