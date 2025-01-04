@@ -1,4 +1,5 @@
 <?php
+
 if( ! empty( $_POST['email'] ) ) {
 
 	// Enable / Disable SMTP
@@ -14,7 +15,7 @@ if( ! empty( $_POST['email'] ) ) {
 	$subject = 'k-Tech - Kontatk forma';
 
 	// Google reCaptcha secret Key
-	$grecaptcha_secret_key = 'RECAPTCHA_SECRET_KEY';
+	$grecaptcha_secret_key = '6LcAGa0qAAAAANYXl_rRq3bQIqeUXORrCcApHgwJ';
 
 	$from 	= $_POST['email'];
 	$name 	= isset( $_POST['name'] ) ? $_POST['name'] : '';
