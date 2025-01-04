@@ -21,7 +21,6 @@ if( ! empty( $_POST['email'] ) ) {
 	$subject = 'k-Tech - Kontatk forma';
 
 	// Google reCaptcha secret Key
-	//$grecaptcha_secret_key = '6LcAGa0qAAAAANYXl_rRq3bQIqeUXORrCcApHgwJ';
 	$grecaptcha_secret_key = $_ENV['GRECAPTCHA_SECRET_KEY'];	
 
 	$from 	= $_POST['email'];
