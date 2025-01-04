@@ -1,5 +1,11 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php'; // Put prema autoload datoteci
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); // Put do foldera gdje je .env
+$dotenv->load();
+
+
 if( ! empty( $_POST['email'] ) ) {
 
 	// Enable / Disable SMTP
@@ -15,7 +21,8 @@ if( ! empty( $_POST['email'] ) ) {
 	$subject = 'k-Tech - Kontatk forma';
 
 	// Google reCaptcha secret Key
-	$grecaptcha_secret_key = '6LcAGa0qAAAAANYXl_rRq3bQIqeUXORrCcApHgwJ';
+	//$grecaptcha_secret_key = '6LcAGa0qAAAAANYXl_rRq3bQIqeUXORrCcApHgwJ';
+	$grecaptcha_secret_key = $_ENV['GRECAPTCHA_SECRET_KEY'];	
 
 	$from 	= $_POST['email'];
 	$name 	= isset( $_POST['name'] ) ? $_POST['name'] : '';
