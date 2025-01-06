@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php'; // Put prema autoload datoteci
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__); // Put do foldera gdje je .env
