@@ -423,6 +423,9 @@
       _this.removeClass("open");
     });
 
+  if (window.location.pathname === "/index.html") {
+    window.history.pushState({}, "Naslovna", "/naslovna");
+  }
   // Add active class to current menu
   var pgurl = window.location.href.substr(
     window.location.href.lastIndexOf("/") + 1
