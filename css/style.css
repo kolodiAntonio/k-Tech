@@ -880,7 +880,7 @@ a.text-jade-hover:hover {
   -webkit-text-stroke-width: 4px;
 }
 .text-outline-width-5px {
-  -webkit-text-stroke-width: 5px;
+  -webkit-text-stroke-width: 5px;.
 }
 /* Text stroke color */
 .text-outline-color-black {
@@ -888,6 +888,9 @@ a.text-jade-hover:hover {
 }
 .text-outline-color-base-color {
   -webkit-text-stroke-color: var(--base-color);
+}
+.text-outline-color-theme-color {
+  -webkit-text-stroke-color:#F9EB0F;
 }
 .text-outline-color-red {
   -webkit-text-stroke-color: var(--red);
@@ -5950,7 +5953,7 @@ textarea:focus,
 .mb-120px {
   margin-bottom: 120px !important;
 }
-.mb-200px{
+.mb-200px {
   margin-bottom: 200px !important;
 }
 .mb-1 {
@@ -20565,4 +20568,8 @@ footer .footer-navbar .nav-item:last-child a {
 }
 .footer-demo img {
   max-height: 55px !important;
+}
+
+.greyscale{
+  filter: grayscale(100%);
 }
