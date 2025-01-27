@@ -17,9 +17,6 @@ body {
   font-weight: 500;
   font-size: 18px;
 }
-header .navbar-brand img {
-  max-height: 56px;
-}
 header .btn.btn-switch-text.btn-medium > span {
   padding: 11px 30px;
 }
