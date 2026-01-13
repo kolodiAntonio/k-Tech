@@ -52,7 +52,19 @@ if ($root) {
 	error_log('Unable to locate project root for .env in contact-form.php: ' . __DIR__);
 }
 
-// Ensure GRECAPTCHA_SECRET_KEY is available in $_ENV from getenv fallback
+// Helper to read first available env name from list
+function env_any_cf(array $names) {
+	foreach ($names as $n) {
+		$v = getenv($n);
+		if ($v !== false && $v !== '') return $v;
+		if (isset($_ENV[$n]) && $_ENV[$n] !== '') return $_ENV[$n];
+		if (isset($_SERVER[$n]) && $_SERVER[$n] !== '') return $_SERVER[$n];
+	}
+	return '';
+}
+
+// Ensure GRECAPTCHA secret available under common names
+$_ENV['GRECAPTCHA_SECRET_KEY'] = env_any_cf(['GRECAPTCHA_SECRET_KEY','RECAPTCHA_SECRET_KEY','RECAPTCHA_SECRET','RECAPTCHA_KEY','SECRET_KEY']);
 if ( empty( $_ENV['GRECAPTCHA_SECRET_KEY'] ) ) {
 	$_ENV['GRECAPTCHA_SECRET_KEY'] = getenv('GRECAPTCHA_SECRET_KEY');
 }
@@ -92,7 +104,14 @@ if( ! empty( $_POST['email'] ) ) {
 	$subject = 'k-Tech - Kontatk forma';
 
 	// Google reCaptcha secret Key
-	$grecaptcha_secret_key = $_ENV['GRECAPTCHA_SECRET_KEY'];	
+	$grecaptcha_secret_key = ! empty($_ENV['GRECAPTCHA_SECRET_KEY']) ? $_ENV['GRECAPTCHA_SECRET_KEY'] : '';
+
+	if ( empty( $grecaptcha_secret_key ) ) {
+		error_log('contact-form: GRECAPTCHA secret not configured on server.');
+		// If no secret configured, return a clear error
+		echo '{ "alert": "alert-danger", "message": "Server reCaptcha secret not configured." }';
+		die;
+	}
 
 	$from 	= $_POST['email'];
 	$name 	= isset( $_POST['name'] ) ? $_POST['name'] : '';
@@ -113,6 +132,8 @@ if( ! empty( $_POST['email'] ) ) {
 
 		// verify the response (supports reCAPTCHA v2 and v3)
 		if ( empty( $arrResponse ) || ! isset( $arrResponse['success'] ) || $arrResponse['success'] != true ) {
+			error_log('contact-form: reCaptcha verification failed. raw response: ' . $response);
+			error_log('contact-form: reCaptcha decoded: ' . print_r($arrResponse, true));
 			echo '{ "alert": "alert-danger", "message": "Your message could not been sent due to invalid reCaptcha!" }';
 			die;
 		}
