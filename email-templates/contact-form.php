@@ -1,18 +1,58 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php'; // adjust path to autoload if needed
-
-// Load environment variables from project root (one level up from this file)
-// .env should live in project root (outside public webroot if possible)
-$envPath = realpath(__DIR__ . '/../');
-if ( $envPath && is_dir($envPath) ) {
-	$dotenv = Dotenv\Dotenv::createImmutable($envPath);
-	$dotenv->safeLoad();
-} else {
-	// If dotenv isn't available or path cannot be resolved, continue but warn in logs
-	error_log('Unable to locate project root for .env loading: ' . __DIR__);
+// Try to locate project root (where index.html lives) by searching parent dirs
+$startDir = __DIR__;
+$root = null;
+$search = $startDir;
+for ($i = 0; $i < 6; $i++) {
+	if (file_exists($search . '/.env') || file_exists($search . '/index.html') || file_exists($search . '/vendor/autoload.php')) {
+		$root = $search;
+		break;
+	}
+	$parent = dirname($search);
+	if ($parent === $search) break;
+	$search = $parent;
 }
 
-// Prefer getenv fallback if Dotenv didn't populate $_ENV
+if ($root) {
+	// load composer autoload if available
+	$autoload = $root . '/vendor/autoload.php';
+	if (file_exists($autoload)) {
+		require_once $autoload;
+	}
+	// try vlucas/phpdotenv if present
+	try {
+		if (class_exists('\\Dotenv\\Dotenv')) {
+			$dotenv = \Dotenv\Dotenv::createImmutable($root);
+			$dotenv->safeLoad();
+		}
+	} catch (\Throwable $e) {
+		error_log('Dotenv load failed in contact-form.php: ' . $e->getMessage());
+	}
+
+	// Fallback: if Dotenv not available or didn't populate envs, parse .env manually
+	$envFile = $root . '/.env';
+	if (file_exists($envFile) && (!getenv('GRECAPTCHA_SECRET_KEY') && !isset($_ENV['GRECAPTCHA_SECRET_KEY']))) {
+		$lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if ($line === '' || strpos($line, '#') === 0) continue;
+			$parts = explode('=', $line, 2);
+			if (count($parts) !== 2) continue;
+			$k = trim($parts[0]);
+			$v = trim($parts[1]);
+			if ((substr($v,0,1) === '"' && substr($v,-1) === '"') || (substr($v,0,1) === "'" && substr($v,-1) === "'")) {
+				$v = substr($v,1,-1);
+			}
+			putenv(sprintf('%s=%s', $k, $v));
+			$_ENV[$k] = $v;
+			$_SERVER[$k] = $v;
+		}
+	}
+} else {
+	error_log('Unable to locate project root for .env in contact-form.php: ' . __DIR__);
+}
+
+// Ensure GRECAPTCHA_SECRET_KEY is available in $_ENV from getenv fallback
 if ( empty( $_ENV['GRECAPTCHA_SECRET_KEY'] ) ) {
 	$_ENV['GRECAPTCHA_SECRET_KEY'] = getenv('GRECAPTCHA_SECRET_KEY');
 }
