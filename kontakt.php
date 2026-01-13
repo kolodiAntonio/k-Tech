@@ -3,13 +3,31 @@
 // Try to load vlucas/phpdotenv if vendor autoload exists (shared host won't export env by default).
 $maps_key = '';
 $recaptcha_site_key = '';
-$projectRoot = __DIR__;
-$autoload = $projectRoot . '/vendor/autoload.php';
-if ( file_exists( $autoload ) ) {
-  require_once $autoload;
+
+// Attempt to locate project root by searching parent directories for vendor/autoload.php and .env
+$searchDir = __DIR__;
+$root = null;
+for ($i = 0; $i < 6; $i++) {
+  $possibleVendor = $searchDir . '/vendor/autoload.php';
+  $possibleEnv = $searchDir . '/.env';
+  if (file_exists($possibleVendor) || file_exists($possibleEnv)) {
+    $root = $searchDir;
+    break;
+  }
+  $parent = dirname($searchDir);
+  if ($parent === $searchDir) break;
+  $searchDir = $parent;
+}
+
+if ($root) {
+  $autoload = $root . '/vendor/autoload.php';
+  if (file_exists($autoload)) {
+    require_once $autoload;
+  }
   try {
-    if ( class_exists('\Dotenv\Dotenv') ) {
-      $dotenv = \Dotenv\Dotenv::createImmutable( $projectRoot );
+    if (class_exists('\\Dotenv\\Dotenv')) {
+      $dotenv = \Dotenv\Dotenv::createImmutable($root);
+      // safeLoad will not throw if .env missing
       $dotenv->safeLoad();
     }
   } catch (\Throwable $e) {
@@ -17,9 +35,9 @@ if ( file_exists( $autoload ) ) {
   }
 }
 
-// Prefer getenv, then $_ENV as fallback
-$maps_key = getenv('GOOGLE_MAPS_KEY') ?: ( isset($_ENV['GOOGLE_MAPS_KEY']) ? $_ENV['GOOGLE_MAPS_KEY'] : '' );
-$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: ( isset($_ENV['RECAPTCHA_SITE_KEY']) ? $_ENV['RECAPTCHA_SITE_KEY'] : '' );
+// Read values — prefer getenv, then $_ENV, then $_SERVER
+$maps_key = getenv('GOOGLE_MAPS_KEY') ?: (isset($_ENV['GOOGLE_MAPS_KEY']) ? $_ENV['GOOGLE_MAPS_KEY'] : (isset($_SERVER['GOOGLE_MAPS_KEY']) ? $_SERVER['GOOGLE_MAPS_KEY'] : ''));
+$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: (isset($_ENV['RECAPTCHA_SITE_KEY']) ? $_ENV['RECAPTCHA_SITE_KEY'] : (isset($_SERVER['RECAPTCHA_SITE_KEY']) ? $_SERVER['RECAPTCHA_SITE_KEY'] : ''));
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="hr">
