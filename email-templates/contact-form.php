@@ -1,14 +1,46 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php'; // Put prema autoload datoteci
+require_once __DIR__ . '/../vendor/autoload.php'; // adjust path to autoload if needed
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); // Put do foldera gdje je .env
-$dotenv->load();
+// Load environment variables from project root (one level up from this file)
+// .env should live in project root (outside public webroot if possible)
+$envPath = realpath(__DIR__ . '/../');
+if ( $envPath && is_dir($envPath) ) {
+	$dotenv = Dotenv\Dotenv::createImmutable($envPath);
+	$dotenv->safeLoad();
+} else {
+	// If dotenv isn't available or path cannot be resolved, continue but warn in logs
+	error_log('Unable to locate project root for .env loading: ' . __DIR__);
+}
+
+// Prefer getenv fallback if Dotenv didn't populate $_ENV
+if ( empty( $_ENV['GRECAPTCHA_SECRET_KEY'] ) ) {
+	$_ENV['GRECAPTCHA_SECRET_KEY'] = getenv('GRECAPTCHA_SECRET_KEY');
+}
 
 
 if( ! empty( $_POST['email'] ) ) {
 
-	// Enable / Disable SMTP
-	$enable_smtp = 'no'; // yes OR no
+	// Load SMTP settings from environment (set these in your .env on the host)
+	$smtpHost = ! empty( $_ENV['SMTP_HOST'] ) ? $_ENV['SMTP_HOST'] : getenv('SMTP_HOST');
+	$smtpUser = ! empty( $_ENV['SMTP_USERNAME'] ) ? $_ENV['SMTP_USERNAME'] : getenv('SMTP_USERNAME');
+	$smtpPass = ! empty( $_ENV['SMTP_PASSWORD'] ) ? $_ENV['SMTP_PASSWORD'] : getenv('SMTP_PASSWORD');
+	$smtpPort = ! empty( $_ENV['SMTP_PORT'] ) ? $_ENV['SMTP_PORT'] : getenv('SMTP_PORT');
+	$smtpSecure = ! empty( $_ENV['SMTP_SECURE'] ) ? $_ENV['SMTP_SECURE'] : getenv('SMTP_SECURE');
+	$mailFrom = ! empty( $_ENV['MAIL_FROM'] ) ? $_ENV['MAIL_FROM'] : getenv('MAIL_FROM');
+	$mailFromName = ! empty( $_ENV['MAIL_FROM_NAME'] ) ? $_ENV['MAIL_FROM_NAME'] : getenv('MAIL_FROM_NAME');
+
+	// Optional relay host (useful for Exchange connector): host that accepts mail for your domain (e.g. your-domain-com-hr.mail.protection.outlook.com)
+	$smtpRelayHost = ! empty( $_ENV['SMTP_RELAY_HOST'] ) ? $_ENV['SMTP_RELAY_HOST'] : getenv('SMTP_RELAY_HOST');
+	// If set to 'no', do not use authentication when connecting to relay host
+	$smtpRelayAuth = ! empty( $_ENV['SMTP_RELAY_AUTH'] ) ? strtolower($_ENV['SMTP_RELAY_AUTH']) : strtolower(getenv('SMTP_RELAY_AUTH'));
+
+	// Enable SMTP automatically if explicit SMTP host+creds provided, or if relay host is configured
+	$enable_smtp = 'no';
+	if ( ! empty( $smtpHost ) && ! empty( $smtpUser ) && ! empty( $smtpPass ) ) {
+		$enable_smtp = 'yes';
+	} elseif ( ! empty( $smtpRelayHost ) ) {
+		$enable_smtp = 'yes';
+	}
 
 	// Email Receiver Address
 	$receiver_email = 'info@k-tech.com.hr';
@@ -144,16 +176,44 @@ if( ! empty( $_POST['email'] ) ) {
 			require 'phpmailer/PHPMailer.php';
 			require 'phpmailer/SMTP.php';
 
-			$mail = new PHPMailer\PHPMailer\PHPMailer();
+					$mail = new PHPMailer\PHPMailer\PHPMailer();
 
-			$mail->isSMTP();
-			$mail->Host     = 'YOUR_SMTP_HOST'; // Your SMTP Host
-			$mail->SMTPAuth = true;
-			$mail->Username = 'YOUR_SMTP_USERNAME'; // Your Username
-			$mail->Password = 'YOUR_SMTP_PASSWORD'; // Your Password
-			$mail->SMTPSecure = 'ssl'; // Your Secure Connection
-			$mail->Port     = 465; // Your Port
-			$mail->setFrom( $fields['Email'], $fields['Name'] );
+					$mail->isSMTP();
+					// If a relay host is configured, prefer it
+					if ( ! empty( $smtpRelayHost ) ) {
+						$mail->Host = $smtpRelayHost;
+						// For relay we commonly use port 25 and no auth
+						$mail->SMTPAuth = ( $smtpRelayAuth === 'no' ) ? false : true;
+						if ( $mail->SMTPAuth ) {
+							// If relay auth requested, try provided creds
+							$mail->Username = $smtpUser;
+							$mail->Password = $smtpPass;
+						}
+						$mail->SMTPSecure = '';
+						$mail->Port = ! empty( $smtpPort ) ? intval( $smtpPort ) : 25;
+					} else {
+						$mail->Host     = $smtpHost;
+						$mail->SMTPAuth = true;
+						$mail->Username = $smtpUser;
+						$mail->Password = $smtpPass;
+						// SMTPSecure can be 'ssl' or 'tls' or empty. Default to ssl for 465
+						if ( empty( $smtpSecure ) ) {
+							$smtpSecure = ($smtpPort == 587) ? 'tls' : 'ssl';
+						}
+						if ( ! empty( $smtpSecure ) ) {
+							$mail->SMTPSecure = $smtpSecure;
+						}
+						$mail->Port     = ! empty( $smtpPort ) ? intval( $smtpPort ) : 465;
+					}
+					// From address should be the authenticated mailbox or configured MAIL_FROM
+					$fromAddress = ! empty( $mailFrom ) ? $mailFrom : ( isset($fields['Email']) ? $fields['Email'] : ( ! empty($smtpUser) ? $smtpUser : '' ) );
+					$fromName = ! empty( $mailFromName ) ? $mailFromName : ( isset($fields['Name']) ? $fields['Name'] : 'Website' );
+					if ( ! empty( $fromAddress ) ) {
+						$mail->setFrom( $fromAddress, $fromName );
+					}
+					if ( isset( $fields['Email'] ) ) {
+						$mail->addReplyTo( $fields['Email'], isset($fields['Name']) ? $fields['Name'] : '' );
+					}
 			
 			foreach( $toemailaddresses as $toemailaddress ) {
 				$mail->AddAddress( $toemailaddress['email'], $toemailaddress['name'] );

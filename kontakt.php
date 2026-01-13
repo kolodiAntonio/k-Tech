@@ -1,14 +1,55 @@
-﻿<!doctype html>
-<html>
+<?php
+// Load env via getenv (Dotenv already used by contact-form.php)
+$maps_key = getenv('GOOGLE_MAPS_KEY') ?: '';
+$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: '';
+?>
+<!DOCTYPE html>
+<html class="no-js" lang="hr">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0;url=kontakt.php">
-    <title>Redirecting…</title>
+    <title>k-Tech - Kontakt</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="k-Tech" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kontaktirajte nas za izradu web stranica, e-commerce rješenja i SEO optimizaciju. Naš tim stoji na raspolaganju za sva pitanja i prilagođena digitalna rješenja koja unapređuju vaš online uspjeh!"
+    />
+    <!-- favicon icon -->
+    <link rel="shortcut icon" href="images/ktech_favicon.png" />
+    <link rel="apple-touch-icon" href="images/ktech_favicon.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="images/ktech_favicon.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="images/ktech_favicon.png"
+    />
+    <!-- google fonts preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- style sheets and font icons  -->
+    <link rel="stylesheet" href="css/vendors.min.css" />
+    <link rel="stylesheet" href="css/icon.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/kTech.css" />
   </head>
-  <body>
-    If you are not redirected automatically, follow this <a href="kontakt.php">link to kontakt page</a>.
-  </body>
-</html>
+  <body
+    data-mobile-nav-style="full-screen-menu"
+    data-mobile-nav-bg-color="#232323"
+    class="background-position-center-top custom-cursor"
+    style="background-image: url(images/vertical-line-bg-small-medium-gray.svg)"
+  >
+    <!-- start cursor -->
+    <div class="cursor-page-inner">
+      <div class="circle-cursor circle-cursor-inner"></div>
+      <div class="circle-cursor circle-cursor-outer"></div>
+    </div>
+    <!-- end cursor -->
     <!-- start header -->
     <header>
       <!-- start navigation -->
@@ -44,7 +85,7 @@
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#navbarNav"
-              aria-controls="navbarNav"
+              aria-controls="#navbarNav"
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
@@ -67,13 +108,8 @@
                 <li class="nav-item">
                   <a href="usluge.html" class="nav-link">usluge</a>
                 </li>
-                <!-- <li class="nav-item">
-                  <a href="demo-scattered-portfolio-work.html" class="nav-link"
-                    >work</a
-                  >
-                </li> -->
                 <li class="nav-item">
-                  <a href="kontakt.html" class="nav-link">kontakt</a>
+                  <a href="kontakt.php" class="nav-link">kontakt</a>
                 </li>
               </ul>
             </div>
@@ -312,7 +348,7 @@
                 <!-- reCAPTCHA -->
                 <div
                   class="col-md-7 g-recaptcha margin-35px-bottom sm-mb-20px"
-                  data-sitekey="6LcAGa0qAAAAAI3DatiZK-x6x4Mul9Uc29vEiFKz"
+                  data-sitekey="<?php echo htmlspecialchars($recaptcha_site_key); ?>"
                 ></div>
                 <!-- reCAPTCHA -->
                 <!-- Submit btn -->
@@ -346,7 +382,6 @@
               class="map h-650px md-h-500px sm-h-400px"
               data-map-options='{ "lat": 45.186760901205844, "lng": 18.695700940988814, "style": "Silver", "marker": { "type": "HTML", "color": "#ffea00" }, "popup": { "defaultOpen": true, "html": "<div class=infowindow><strong class=\"mb-3 d-inline-block fw-500\">K-Tech</strong><p>Josipa Kozarca 57 <br> 32272 Cerna</p></div><div class=\"google-maps-link\"> <a aria-label=\"View larger map\" target=\"_blank\" jstcache=\"31\" href=\"https://maps.google.com/maps?ll=45.186760901205844,18.695700940988814&amp;z=17&amp;t=m&amp;hl=en-US&amp;gl=IN&amp;mapclient=embed&amp;cid=13153204942596594448\" jsaction=\"mouseup:placeCard.largerMap\">OTVORI KARTE</a></div>" } }'
             ></div>
-            <!-- https://www.google.com/maps/place/K-Tech/@45.172993,18.5968393,12z/data=!3m1!4b1!4m6!3m5!1s0x88c20c7bb8609f0f:0x8959e01511244eb3!8m2!3d45.1729016!4d18.6792403!16s%2Fg%2F11vjmyvlxy?entry=ttu -->
           </div>
         </div>
       </div>
@@ -410,16 +445,16 @@
                     class="facebook"
                     href="https://www.facebook.com/"
                     target="_blank"
-                    >Fb.</a
-                  >
+                  >Fb.</a
+                >
                 </li>
                 <li>
                   <a
                     class="linkedin"
                     href="http://www.linkedin.com"
                     target="_blank"
-                    >In.</a
-                  >
+                  >In.</a
+                >
                 </li>
               </ul>
             </div>
@@ -485,10 +520,9 @@
     <script
       async
       defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEo-vorWvCe6uj1Ddt8wEfSRZ6RK1vLZA&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=<?php echo htmlspecialchars($maps_key); ?>&callback=initMap"
     ></script>
     <script type="text/javascript" src="js/main.js"></script>
-
     <div
       style="
         background-color: rgb(255, 255, 255);

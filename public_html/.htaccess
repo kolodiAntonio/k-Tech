@@ -1,0 +1,9 @@
+<Files ".env">
+    Require all denied
+</Files>
+
+# Fallback for older Apache versions
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
