@@ -59,7 +59,19 @@ if ($root) {
 
 // Read values — prefer getenv, then $_ENV, then $_SERVER
 $maps_key = getenv('GOOGLE_MAPS_KEY') ?: (isset($_ENV['GOOGLE_MAPS_KEY']) ? $_ENV['GOOGLE_MAPS_KEY'] : (isset($_SERVER['GOOGLE_MAPS_KEY']) ? $_SERVER['GOOGLE_MAPS_KEY'] : ''));
-$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: (isset($_ENV['RECAPTCHA_SITE_KEY']) ? $_ENV['RECAPTCHA_SITE_KEY'] : (isset($_SERVER['RECAPTCHA_SITE_KEY']) ? $_SERVER['RECAPTCHA_SITE_KEY'] : ''));
+$
+// Helper to read first available env name from list
+function env_any(array $names) {
+  foreach ($names as $n) {
+    $v = getenv($n);
+    if ($v !== false && $v !== '') return $v;
+    if (isset($_ENV[$n]) && $_ENV[$n] !== '') return $_ENV[$n];
+    if (isset($_SERVER[$n]) && $_SERVER[$n] !== '') return $_SERVER[$n];
+  }
+  return '';
+}
+
+$recaptcha_site_key = env_any([ 'RECAPTCHA_SITE_KEY', 'GRECAPTCHA_SITE_KEY', 'RECAPTCHA_KEY', 'RECAPTCHA_PUBLIC_KEY', 'SITE_KEY' ]);
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="hr">
