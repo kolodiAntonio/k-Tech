@@ -1,7 +1,25 @@
 <?php
-// Load env via getenv (Dotenv already used by contact-form.php)
-$maps_key = getenv('GOOGLE_MAPS_KEY') ?: '';
-$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: '';
+// Ensure environment variables are available to this page.
+// Try to load vlucas/phpdotenv if vendor autoload exists (shared host won't export env by default).
+$maps_key = '';
+$recaptcha_site_key = '';
+$projectRoot = __DIR__;
+$autoload = $projectRoot . '/vendor/autoload.php';
+if ( file_exists( $autoload ) ) {
+  require_once $autoload;
+  try {
+    if ( class_exists('\Dotenv\Dotenv') ) {
+      $dotenv = \Dotenv\Dotenv::createImmutable( $projectRoot );
+      $dotenv->safeLoad();
+    }
+  } catch (\Throwable $e) {
+    error_log('Dotenv load failed in kontakt.php: ' . $e->getMessage());
+  }
+}
+
+// Prefer getenv, then $_ENV as fallback
+$maps_key = getenv('GOOGLE_MAPS_KEY') ?: ( isset($_ENV['GOOGLE_MAPS_KEY']) ? $_ENV['GOOGLE_MAPS_KEY'] : '' );
+$recaptcha_site_key = getenv('RECAPTCHA_SITE_KEY') ?: ( isset($_ENV['RECAPTCHA_SITE_KEY']) ? $_ENV['RECAPTCHA_SITE_KEY'] : '' );
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="hr">
