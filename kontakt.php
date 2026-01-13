@@ -33,6 +33,28 @@ if ($root) {
   } catch (\Throwable $e) {
     error_log('Dotenv load failed in kontakt.php: ' . $e->getMessage());
   }
+
+  // If Dotenv not available or didn't populate envs, attempt a simple .env parser fallback
+  $envFile = $root . '/.env';
+  if (file_exists($envFile) && (!isset($_ENV['GOOGLE_MAPS_KEY']) || !isset($_ENV['RECAPTCHA_SITE_KEY']))) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+      $line = trim($line);
+      if ($line === '' || strpos($line, '#') === 0) continue;
+      // split on first =
+      $parts = explode('=', $line, 2);
+      if (count($parts) !== 2) continue;
+      $k = trim($parts[0]);
+      $v = trim($parts[1]);
+      // remove surrounding quotes
+      if ((substr($v,0,1) === '"' && substr($v,-1) === '"') || (substr($v,0,1) === "'" && substr($v,-1) === "'")) {
+        $v = substr($v,1,-1);
+      }
+      putenv(sprintf('%s=%s', $k, $v));
+      $_ENV[$k] = $v;
+      $_SERVER[$k] = $v;
+    }
+  }
 }
 
 // Read values — prefer getenv, then $_ENV, then $_SERVER

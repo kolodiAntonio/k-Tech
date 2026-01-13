@@ -1,4 +1,37 @@
 <?php
+// Temporary debug file — remove immediately after testing.
+// Only prints obscured/partial values to avoid leaking secrets.
+header('Content-Type: text/plain; charset=utf-8');
+
+$keys = [
+    'GOOGLE_MAPS_KEY',
+    'RECAPTCHA_SITE_KEY',
+    'GRECAPTCHA_SECRET_KEY'
+];
+
+foreach ($keys as $k) {
+    $v_getenv = getenv($k);
+    $v_env = isset($_ENV[$k]) ? $_ENV[$k] : null;
+    $v_server = isset($_SERVER[$k]) ? $_SERVER[$k] : null;
+
+    // choose first non-empty source
+    $val = $v_getenv ?: $v_env ?: $v_server;
+
+    if (!$val) {
+        echo "$k: (not set)\n";
+        continue;
+    }
+
+    // show only first 8 chars for safety
+    $safe = substr($val, 0, 8) . '...';
+    // mark whether value came from getenv/$_ENV/$_SERVER
+    $source = $v_getenv ? 'getenv' : ($v_env ? '$_ENV' : '$_SERVER');
+    echo "$k: $safe  ($source)\n";
+}
+
+echo "\nREMOVE THIS FILE AFTER TESTING.\n";
+?>
+<?php
 // Temporary debug file — remove this immediately after testing
 // Shows only the first 8 characters of site keys, never the secret.
 header('Content-Type: text/plain; charset=utf-8');
