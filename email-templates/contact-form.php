@@ -30,8 +30,9 @@ if ($root) {
 	}
 
 	// Fallback: if Dotenv not available or didn't populate envs, parse .env manually
+	// Always attempt to parse .env from the detected project root so runtime has the keys available.
 	$envFile = $root . '/.env';
-	if (file_exists($envFile) && (!getenv('GRECAPTCHA_SECRET_KEY') && !isset($_ENV['GRECAPTCHA_SECRET_KEY']))) {
+	if (file_exists($envFile)) {
 		$lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		foreach ($lines as $line) {
 			$line = trim($line);
@@ -47,6 +48,7 @@ if ($root) {
 			$_ENV[$k] = $v;
 			$_SERVER[$k] = $v;
 		}
+		error_log('contact-form: parsed .env from ' . $envFile);
 	}
 } else {
 	error_log('Unable to locate project root for .env in contact-form.php: ' . __DIR__);
