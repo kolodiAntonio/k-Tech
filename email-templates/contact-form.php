@@ -39,16 +39,23 @@ if( ! empty( $_POST['email'] ) ) {
 		curl_close($ch);
 		$arrResponse = json_decode($response, true);
 
-		// verify the response
-		if( isset( $_POST['action'] ) && ! ( isset( $arrResponse['success'] ) && $arrResponse['success'] == '1' && $arrResponse['action'] == $_POST['action'] && $arrResponse['score'] = 0.5 ) ) {
-
+		// verify the response (supports reCAPTCHA v2 and v3)
+		if ( empty( $arrResponse ) || ! isset( $arrResponse['success'] ) || $arrResponse['success'] != true ) {
 			echo '{ "alert": "alert-danger", "message": "Your message could not been sent due to invalid reCaptcha!" }';
 			die;
+		}
 
-		} else if( ! isset( $_POST['action'] ) && ! ( isset( $arrResponse['success'] ) && $arrResponse['success'] == '1' ) ) {
-
-			echo '{ "alert": "alert-danger", "message": "Your message could not been sent due to invalid reCaptcha!" }';
-			die;
+		// If v3 response contains a score, enforce a minimum threshold (0.5) and optional action match
+		if ( isset( $arrResponse['score'] ) ) {
+			$score = floatval( $arrResponse['score'] );
+			if ( $score < 0.5 ) {
+				echo '{ "alert": "alert-danger", "message": "Your message could not been sent due to low reCaptcha score!" }';
+				die;
+			}
+			if ( isset( $_POST['action'] ) && isset( $arrResponse['action'] ) && $arrResponse['action'] !== $_POST['action'] ) {
+				echo '{ "alert": "alert-danger", "message": "reCaptcha action mismatch." }';
+				die;
+			}
 		}
 	}
 
