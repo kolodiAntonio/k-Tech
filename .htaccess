@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Provjera postojanja datoteka i mapa
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Dodavanje ekstenzije .html ako nije navedena
+RewriteRule ^([^\.]+)$ $1.html [L]

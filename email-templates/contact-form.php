@@ -8,7 +8,7 @@ $dotenv->load();
 if( ! empty( $_POST['email'] ) ) {
 
 	// Enable / Disable SMTP
-	$enable_smtp = 'no'; // yes OR no
+	$enable_smtp = 'yes'; // yes OR no
 
 	// Email Receiver Address
 	$receiver_email = 'info@k-tech.com.hr';
