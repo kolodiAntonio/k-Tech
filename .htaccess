@@ -1,8 +1,14 @@
 RewriteEngine On
 
-# Provjera postojanja datoteka i mapa
+# 1) Home: /index ili /index.html -> /
+RewriteCond %{THE_REQUEST} \s/+index(\.html)?[\s?] [NC]
+RewriteRule ^index(\.html)?$ / [R=301,L]
+
+# 2) Preusmjeri .html na clean URL (npr. /kontakt.html -> /kontakt)
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# 3) Interno mapiranje: /kontakt -> /kontakt.html (ali samo ako ne postoji file/folder)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
-# Dodavanje ekstenzije .html ako nije navedena
-RewriteRule ^([^\.]+)$ $1.html [L]
+RewriteRule ^(.+)$ $1.html [L]
