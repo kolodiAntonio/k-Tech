@@ -114,10 +114,10 @@ if( ! empty( $_POST['email'] ) ) {
 				}
 
 			   	//Success Message
-			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Your message has been sent successfully!" }';
+			  	echo '{ "alert": "alert alert-success alert-dismissable", "message": "Vaša poruka je uspješno poslana!" }';
 			} else {
 				//Fail Message
-			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Your message could not been sent!" }';
+			  	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Nešto nije u redu. Molimo pokušajte kasnije." }';
 			}
 			
 		} else { // SMTP
@@ -172,4 +172,5 @@ if( ! empty( $_POST['email'] ) ) {
 } else {
 	//Empty Email Message
 	echo '{ "alert": "alert alert-danger alert-dismissable", "message": "Please add an email address!" }';
+
 }
